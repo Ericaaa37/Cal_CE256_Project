@@ -1,6 +1,6 @@
 Calculating Accessibility Score for each Cencus Tract and related spatial Gini index. <br>
 
-"SB535DACresultsdatadictionary_F_2022_2024tribalupdate.xlsx": Data inputs. <br>
+"SB535DACresultsdatadictionary_F_2022_2024tribalupdate.xlsx": <u>Data inputs.</u> <br>
 "Stations_that_meet_NEVI_requirements_(March_2024).csv.xlsx": Data inputs. <br>
 "alt_fuel_stations (Nov 13 2025).csv": Data inputs. <br>
 
