@@ -2,10 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.neighbors import BallTree
 
-
-# ==============================
-# Helper functions
-# ==============================
+# functions
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """
@@ -152,10 +149,7 @@ def gini(values, weights=None):
     gini_coeff = 1.0 - 2.0 * np.trapz(cumxw, cumw)
     return gini_coeff
 
-
-# ==============================
 # Main script
-# ==============================
 
 def main():
     """
@@ -169,9 +163,7 @@ def main():
     7. Save results to CSV
     """
 
-    # ----------------------------------------
     # 1. Load census tract data from SB535
-    # ----------------------------------------
     sb535_path = r"C:\Users\Xu Hang\Desktop\256Gini\Gini_Datasets\SB535DACresultsdatadictionary_F_2022_2024tribalupdate.xlsx"
 
     # This reads the local Excel file from your working directory
@@ -217,9 +209,8 @@ def main():
         tracts = tracts[tracts[county_col].astype(str).str.contains("Los Angeles", case=False)]
         
         print(f"Filtered to Los Angeles County. Remaining tracts: {len(tracts)}")
-    # ----------------------------------------
+
     # 2. Load all EV charging stations (NREL)
-    # ----------------------------------------
     alt_fuel_path = r"C:\Users\Xu Hang\Desktop\256Gini\Gini_Datasets\alt_fuel_stations (Nov 13 2025).csv.xlsx"
 
     stations_all_raw = pd.read_excel(alt_fuel_path)
@@ -259,9 +250,7 @@ def main():
 
     stations_all = stations_all[keep_station_cols].copy()
 
-    # ----------------------------------------
     # 3. Load NEVI compliant stations
-    # ----------------------------------------
     nevi_path = r"C:\Users\Xu Hang\Desktop\256Gini\Gini_Datasets\Stations_that_meet_NEVI_requirements_(March_2024).csv.xlsx"
 
     nevi_raw = pd.read_excel(nevi_path)
@@ -290,14 +279,10 @@ def main():
 
     stations_nevi = stations_nevi[keep_nevi_cols].copy()
 
-    # ----------------------------------------
     # 4. Compute distance to nearest station (using all stations)
-    # ----------------------------------------
     tracts = compute_nearest_station_distance(tracts, stations_all, k=1)
 
-    # ----------------------------------------
     # 5. Compute 2SFCA accessibility for two scenarios
-    # ----------------------------------------
     catchment_km = 5.0
 
     tracts["access_all_5km"] = compute_2sfca(
@@ -312,9 +297,7 @@ def main():
         catchment_km=catchment_km
     )
 
-       # ----------------------------------------
     # 6. Compute population weighted Gini coefficients
-    # ----------------------------------------
     values_all = tracts["access_all_5km"].values
     values_nevi = tracts["access_nevi_5km"].values
     weights_pop = tracts["population"].values
@@ -325,10 +308,8 @@ def main():
     print(f"Gini (all stations, {catchment_km} km catchment): {gini_all:.4f}")
     print(f"Gini (NEVI stations only, {catchment_km} km catchment): {gini_nevi:.4f}")
 
-    # ----------------------------------------
     # Attach Gini values and percentiles to each tract
-    # ----------------------------------------
-    # Attach the global Gini values as columns so that each census tract record
+    # Attach the Gini values as columns so that each census tract record
     # carries the inequality measure for that scenario
     tracts["gini_all_5km"] = gini_all
     tracts["gini_nevi_5km"] = gini_nevi
@@ -338,9 +319,7 @@ def main():
     tracts["access_all_5km_pct"] = tracts["access_all_5km"].rank(pct=True)
     tracts["access_nevi_5km_pct"] = tracts["access_nevi_5km"].rank(pct=True)
 
-    # ----------------------------------------
     # 7. Save tract level results to CSV
-    # ----------------------------------------
     output_path = "tract_accessibility_results.csv"
     tracts.to_csv(output_path, index=False)
     print(f"Tract level results saved to: {output_path}")
